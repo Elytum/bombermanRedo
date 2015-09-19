@@ -108,8 +108,6 @@ unsigned int loadtexture(char *filename)
 
 unsigned int loadmaterial(struct aiMaterial *material)
 {
-	dprintf(1, "loadmaterial called\n");
-	// return loadtexture("/nfs/zfs-student-3/users/2014/achazal/bomberman/ressources/objs/Bomberman/body.png");
 	char filename[2000];
 	struct aiString str;
 	if (!aiGetMaterialString(material, AI_MATKEY_TEXTURE_DIFFUSE(0), &str)) {
