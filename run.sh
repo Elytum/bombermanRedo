@@ -1,1 +1,1 @@
-./compile.sh && ./assview ressources/ArmyPilot.dae
+./compile.sh && ./bomberman3D ressources/ArmyPilot.dae

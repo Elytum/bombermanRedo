@@ -89,13 +89,13 @@ void transformmesh(struct aiScene *scene, struct mesh *mesh)
 	}
 }
 
-void initmesh(struct aiScene *scene, struct mesh *mesh, struct aiMesh *amesh)
+void initmesh(struct aiScene *scene, struct mesh *mesh, struct aiMesh *amesh, char *basedir)
 {
 	int i;
 
 	mesh->mesh = amesh; // stow away pointer for bones
 
-	mesh->texture = loadmaterial(scene->mMaterials[amesh->mMaterialIndex]);
+	mesh->texture = loadmaterial(scene->mMaterials[amesh->mMaterialIndex], basedir);
 
 	mesh->vertexcount = amesh->mNumVertices;
 	mesh->position = (float *)calloc(mesh->vertexcount * 3, sizeof(float));
@@ -130,13 +130,13 @@ void initmesh(struct aiScene *scene, struct mesh *mesh, struct aiMesh *amesh)
 	}
 }
 
-void initscene(struct aiScene *scene)
+void initscene(struct aiScene *scene, char *basedir)
 {
 	int i;
 	meshcount = scene->mNumMeshes;
 	meshlist = (struct mesh *)calloc(meshcount, sizeof (*meshlist));
 	for (i = 0; i < meshcount; i++) {
-		initmesh(scene, meshlist + i, scene->mMeshes[i]);
+		initmesh(scene, meshlist + i, scene->mMeshes[i], basedir);
 		transformmesh(scene, meshlist + i);
 	}
 }

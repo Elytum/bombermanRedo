@@ -67,8 +67,8 @@
 struct aiNode	*findnode(struct aiNode *node, char *name);
 void			transformnode(aiMatrix4x4 *result, struct aiNode *node);
 void			transformmesh(struct aiScene *scene, struct mesh *mesh);
-void			initmesh(struct aiScene *scene, struct mesh *mesh, struct aiMesh *amesh);
-void			initscene(struct aiScene *scene);
+void			initmesh(struct aiScene *scene, struct mesh *mesh, struct aiMesh *amesh, char *basedir);
+void			initscene(struct aiScene *scene, char *basedir);
 void			drawmesh(struct mesh *mesh);
 void			drawnode(aiNode *node, aiMatrix4x4 world);
 void			drawscene(struct aiScene *scene);

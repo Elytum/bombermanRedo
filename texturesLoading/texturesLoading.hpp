@@ -4,6 +4,6 @@
 void initchecker(void);
 void lowerstring(char *s);
 unsigned int loadtexture(char *filename);
-unsigned int loadmaterial(struct aiMaterial *material);
+unsigned int loadmaterial(struct aiMaterial *material, char *basedir);
 
 #endif

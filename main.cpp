@@ -43,7 +43,14 @@ struct {
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
 #define CLAMP(x,a,b) MIN(MAX(x,a),b)
 
-char basedir[2000];
+// char basedir[2000];
+
+
+
+
+
+
+
 unsigned int checker_texture = 0;
 
 // int vertexcount = 0, facecount = 0; // for statistics only
@@ -104,7 +111,7 @@ void keyboard(unsigned char key, int x, int y)
 	// 	lasttime = glutGet(GLUT_ELAPSED_TIME);
 }
 
-#define PATH "ressources/ArmyPilot.dae"
+// #define PATH "ressources/ArmyPilot.dae"
 
 static int		initGlfw(void)
 {
@@ -149,14 +156,17 @@ int main(int ac, char **av)
 	flags |= aiProcess_TransformUVCoords;
 	flags |= aiProcess_RemoveComponent;
 
-	strcpy(basedir, PATH);
+	char	basedir[2000];
+	strcpy(basedir, "ressources/ArmyPilot/ArmyPilot.dae");
+
 	char *p = strrchr(basedir, '/');
 	if (!p) p = strrchr(basedir, '\\');
 	if (!p) strcpy(basedir, ""); else p[1] = 0;
 
-	g_scene = (struct aiScene*) aiImportFile(PATH, flags);
+	// strcpy(basedir, "ressources/ArmyPilot/");
+	g_scene = (struct aiScene*) aiImportFile("ressources/ArmyPilot/ArmyPilot.dae", flags);
 	if (g_scene) {
-		initscene(g_scene);
+		initscene(g_scene, basedir);
 
 		float radius = measurescene(g_scene, camera.center);
 		camera.distance = radius * 2 * zoom;
@@ -166,7 +176,7 @@ int main(int ac, char **av)
 
 		setanim(0);
 	} else {
-		fprintf(stderr, "cannot import scene: '%s'\n", PATH);
+		fprintf(stderr, "cannot import scene: '%s'\n", "ressources/ArmyPilot/ArmyPilot.dae");
 	}
 
 					// glEnable(GL_MULTISAMPLE);
