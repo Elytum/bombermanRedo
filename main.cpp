@@ -56,7 +56,8 @@ int meshcount = 0;
 #include <render/render.hpp>
 
 extern struct mesh *meshlist;
-
+#include <graphic.h>
+GLFWwindow		*window;
 
 #define ISOMETRIC 35.264	// true isometric view
 
@@ -87,33 +88,68 @@ float light_position[4] = { -1, 2, 2, 0 };
 
 void keyboard(unsigned char key, int x, int y)
 {
+	static double	old = glfwGetTime();
+	double			tmp;
 	switch (key) {
 		case 27: case 'q': exit(1); break;
 	}
 
-	if (playing)
-		lasttime = glutGet(GLUT_ELAPSED_TIME);
+	if (playing) {
+		tmp = glfwGetTime();
+		lasttime = tmp - old;
+		old = tmp;
+	}
+	// 	lasttime = glutGet(GLUT_ELAPSED_TIME);
 }
 
 #define PATH "ressources/ArmyPilot.dae"
 
+static int		initGlfw(void)
+{
+		// Initialise GLFW
+	if( !glfwInit() )
+	{
+		fprintf( stderr, "Failed to initialize GLFW\n" );
+		return -1;
+	}
+	glfwWindowHint(GLFW_SAMPLES, 4); // 4x antialiasing
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4); // We want OpenGL 4.1
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); //We don't want the old OpenGL
+
+	window = glfwCreateWindow( 1024, 768, "Bomberman 3D", NULL, NULL); 
+	if( window == NULL )
+	{
+		fprintf( stderr, "Failed to open GLFW window.\n" );
+		glfwTerminate();
+		return -1;
+	}
+	glfwMakeContextCurrent(window); // Initialize GLEW 
+	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
+	// glfwSetKeyCallback(window, key_callback);
+	glEnable(GL_DEPTH_TEST);
+	return (0);
+}
+
 int main(int ac, char **av)
 {
+	initGlfw();
 	float clearcolor[4] = { 0.22, 0.22, 0.22, 1.0 };
 	float zoom = 1;
 	// int c;
 
-	glutInitWindowPosition(50, 50+24);
-	glutInitWindowSize(screenw, screenh);
-	glutInit(&ac, av);
-	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
+	// glutInitWindowPosition(50, 50+24);
+	// glutInitWindowSize(screenw, screenh);
+	// glutInit(&ac, av);
+	// glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
 
 	// while ((c = getopt(argc, argv, "iIgtawblc:r:p:z:f:")) != -1) {
 	// }
 
-	glutCreateWindow("Bomberman 3D");
-	screenw = glutGet(GLUT_WINDOW_WIDTH);
-	screenh = glutGet(GLUT_WINDOW_HEIGHT);
+	// glutCreateWindow("Bomberman 3D");
+	// screenw = glutGet(GLUT_WINDOW_WIDTH);
+	// screenh = glutGet(GLUT_WINDOW_HEIGHT);
 
 	initchecker();
 
@@ -149,8 +185,11 @@ int main(int ac, char **av)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
 	glClearColor(clearcolor[0], clearcolor[1], clearcolor[2], clearcolor[3]);
+	while (42) {
+		display();
+	}
 		// glutReshapeFunc(reshape);
-		glutKeyboardFunc(keyboard);
-		glutDisplayFunc(display);
-		glutMainLoop();
+		// glutKeyboardFunc(keyboard);
+		// glutDisplayFunc(display);
+		// glutMainLoop();
 	}

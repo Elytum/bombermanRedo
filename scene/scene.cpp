@@ -12,20 +12,7 @@ extern int checker_texture;
  * resulting meshes during skeletal animation here.
  */
 
-extern int vertexcount, facecount; // for statistics only
-
-// opengl (and skinned vertex) buffers for the meshes
 extern int meshcount;
-// struct mesh {
-// 	struct aiMesh *mesh;
-// 	unsigned int texture;
-// 	int vertexcount, elementcount;
-// 	float *position;
-// 	float *normal;
-// 	float *texcoord;
-// 	int *element;
-// } *meshlist = NULL;
-
 
 struct mesh {
 	struct aiMesh *mesh;
