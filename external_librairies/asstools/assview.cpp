@@ -31,185 +31,103 @@
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
 #define CLAMP(x,a,b) MIN(MAX(x,a),b)
 
+char basedir[2000];
+unsigned int checker_texture = 0;
+
+#include <maths/matrix.hpp>
+#include <texturesLoading/texturesLoading.hpp>
+
 /*
  * Use Sean Barrett's excellent stb_image to load textures.
  */
 
 								#define STBI_NO_HDR
-								#include "stb_image.c"
 
-								char basedir[2000];
+								// #include <stb_image/stb_image.c>
 
-								unsigned char checker_data[256*256];
-								unsigned int checker_texture = 0;
+								// char basedir[2000];
 
-								void initchecker(void)
-								{
-									int x, y, i = 0;
-									for (y = 0; y < 256; y++) {
-										for (x = 0; x < 256; x++) {
-											int k = ((x>>5) & 1) ^ ((y>>5) & 1);
-											checker_data[i++] = k ? 255 : 192;
-										}
-									}
-									glGenTextures(1, &checker_texture);
-									glBindTexture(GL_TEXTURE_2D, checker_texture);
-									glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
-									glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-									glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-									glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-									glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-									glTexImage2D(GL_TEXTURE_2D, 0, 1, 256, 256, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, checker_data);
-								}
+								// unsigned char checker_data[256*256];
+								// unsigned int checker_texture = 0;
 
-								void lowerstring(char *s)
-								{
-									while (*s) { *s = tolower(*s); s++; }
-								}
+								// void initchecker(void)
+								// {
+								// 	int x, y, i = 0;
+								// 	for (y = 0; y < 256; y++) {
+								// 		for (x = 0; x < 256; x++) {
+								// 			int k = ((x>>5) & 1) ^ ((y>>5) & 1);
+								// 			checker_data[i++] = k ? 255 : 192;
+								// 		}
+								// 	}
+								// 	glGenTextures(1, &checker_texture);
+								// 	glBindTexture(GL_TEXTURE_2D, checker_texture);
+								// 	glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+								// 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+								// 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+								// 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+								// 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+								// 	glTexImage2D(GL_TEXTURE_2D, 0, 1, 256, 256, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, checker_data);
+								// }
 
-								unsigned int loadtexture(char *filename)
-								{
-									unsigned int texture;
-									unsigned char *image;
-									int w, h, n, intfmt = 0, fmt = 0;
+								// void lowerstring(char *s)
+								// {
+								// 	while (*s) { *s = tolower(*s); s++; }
+								// }
 
-									image = stbi_load(filename, &w, &h, &n, 0);
-									if (!image) {
-										lowerstring(filename);
-										image = stbi_load(filename, &w, &h, &n, 0);
-										if (!image) {
-											fprintf(stderr, "cannot load texture '%s'\n", filename);
-											return 0;
-										}
-									}
+								// unsigned int loadtexture(char *filename)
+								// {
+								// 	unsigned int texture;
+								// 	unsigned char *image;
+								// 	int w, h, n, intfmt = 0, fmt = 0;
 
-									if (n == 1) { intfmt = fmt = GL_LUMINANCE; }
-									if (n == 2) { intfmt = fmt = GL_LUMINANCE_ALPHA; }
-									if (n == 3) { intfmt = fmt = GL_RGB; }
-									if (n == 4) { intfmt = fmt = GL_RGBA; }
+								// 	image = stbi_load(filename, &w, &h, &n, 0);
+								// 	if (!image) {
+								// 		lowerstring(filename);
+								// 		image = stbi_load(filename, &w, &h, &n, 0);
+								// 		if (!image) {
+								// 			fprintf(stderr, "cannot load texture '%s'\n", filename);
+								// 			return 0;
+								// 		}
+								// 	}
 
-									glGenTextures(1, &texture);
-									glBindTexture(GL_TEXTURE_2D, texture);
-									glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
-									glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-									glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-									glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-									glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-									glTexImage2D(GL_TEXTURE_2D, 0, intfmt, w, h, 0, fmt, GL_UNSIGNED_BYTE, image);
-									//glGenerateMipmap(GL_TEXTURE_2D);
+								// 	if (n == 1) { intfmt = fmt = GL_LUMINANCE; }
+								// 	if (n == 2) { intfmt = fmt = GL_LUMINANCE_ALPHA; }
+								// 	if (n == 3) { intfmt = fmt = GL_RGB; }
+								// 	if (n == 4) { intfmt = fmt = GL_RGBA; }
 
-									free(image);
+								// 	glGenTextures(1, &texture);
+								// 	glBindTexture(GL_TEXTURE_2D, texture);
+								// 	glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+								// 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+								// 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+								// 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+								// 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+								// 	glTexImage2D(GL_TEXTURE_2D, 0, intfmt, w, h, 0, fmt, GL_UNSIGNED_BYTE, image);
+								// 	//glGenerateMipmap(GL_TEXTURE_2D);
 
-									return texture;
-								}
+								// 	free(image);
 
-								unsigned int loadmaterial(struct aiMaterial *material)
-								{
-									dprintf(1, "loadmaterial called\n");
-									// return loadtexture("/nfs/zfs-student-3/users/2014/achazal/bomberman/ressources/objs/Bomberman/body.png");
-									char filename[2000];
-									struct aiString str;
-									if (!aiGetMaterialString(material, AI_MATKEY_TEXTURE_DIFFUSE(0), &str)) {
-										dprintf(1, "Condition ok\n");
-										char *s = strrchr(str.data, '/');
-										if (!s) s = strrchr(str.data, '\\');
-										if (!s) s = str.data; else s++;
-										strcpy(filename, basedir);
-										strcat(filename, s);
-										dprintf(1, "loading [%s]\n", filename);
-										return loadtexture(filename);
-									}
-									return 0;
-								}
+								// 	return texture;
+								// }
 
-/*
- * Some extra matrix, vector and quaternion functions.
- *
- * Many of these already exist in some variant in assimp,
- * but not exported to the C interface.
- */
-
-// convert 4x4 to column major format for opengl
-								void transposematrix(float m[16], aiMatrix4x4 *p)
-								{
-									m[0] = p->a1; m[4] = p->a2; m[8] = p->a3; m[12] = p->a4;
-									m[1] = p->b1; m[5] = p->b2; m[9] = p->b3; m[13] = p->b4;
-									m[2] = p->c1; m[6] = p->c2; m[10] = p->c3; m[14] = p->c4;
-									m[3] = p->d1; m[7] = p->d2; m[11] = p->d3; m[15] = p->d4;
-								}
-
-								void extract3x3(aiMatrix3x3 *m3, aiMatrix4x4 *m4)
-								{
-									m3->a1 = m4->a1; m3->a2 = m4->a2; m3->a3 = m4->a3;
-									m3->b1 = m4->b1; m3->b2 = m4->b2; m3->b3 = m4->b3;
-									m3->c1 = m4->c1; m3->c2 = m4->c2; m3->c3 = m4->c3;
-								}
-
-								void mixvector(aiVector3D *p, aiVector3D *a, aiVector3D *b, float t)
-								{
-									p->x = a->x + t * (b->x - a->x);
-									p->y = a->y + t * (b->y - a->y);
-									p->z = a->z + t * (b->z - a->z);
-								}
-
-								float dotquaternions(aiQuaternion *a, aiQuaternion *b)
-								{
-									return a->x*b->x + a->y*b->y + a->z*b->z + a->w*b->w;
-								}
-
-								void normalizequaternion(aiQuaternion *q)
-								{
-									float d = sqrt(dotquaternions(q, q));
-									if (d >= 0.00001) {
-										d = 1 / d;
-										q->x *= d;
-										q->y *= d;
-										q->z *= d;
-										q->w *= d;
-									} else {
-										q->x = q->y = q->z = 0;
-										q->w = 1;
-									}
-								}
-
-								void mixquaternion(aiQuaternion *q, aiQuaternion *a, aiQuaternion *b, float t)
-								{
-									aiQuaternion tmp;
-									if (dotquaternions(a, b) < 0) {
-										tmp.x = -a->x; tmp.y = -a->y; tmp.z = -a->z; tmp.w = -a->w;
-										a = &tmp;
-									}
-									q->x = a->x + t * (b->x - a->x);
-									q->y = a->y + t * (b->y - a->y);
-									q->z = a->z + t * (b->z - a->z);
-									q->w = a->w + t * (b->w - a->w);
-									normalizequaternion(q);
-								}
-
-								void composematrix(aiMatrix4x4 *m,
-									aiVector3D *t, aiQuaternion *q, aiVector3D *s)
-								{
-									// quat to rotation matrix
-									m->a1 = 1 - 2 * (q->y * q->y + q->z * q->z);
-									m->a2 = 2 * (q->x * q->y - q->z * q->w);
-									m->a3 = 2 * (q->x * q->z + q->y * q->w);
-									m->b1 = 2 * (q->x * q->y + q->z * q->w);
-									m->b2 = 1 - 2 * (q->x * q->x + q->z * q->z);
-									m->b3 = 2 * (q->y * q->z - q->x * q->w);
-									m->c1 = 2 * (q->x * q->z - q->y * q->w);
-									m->c2 = 2 * (q->y * q->z + q->x * q->w);
-									m->c3 = 1 - 2 * (q->x * q->x + q->y * q->y);
-
-									// scale matrix
-									m->a1 *= s->x; m->a2 *= s->x; m->a3 *= s->x;
-									m->b1 *= s->y; m->b2 *= s->y; m->b3 *= s->y;
-									m->c1 *= s->z; m->c2 *= s->z; m->c3 *= s->z;
-
-									// set translation
-									m->a4 = t->x; m->b4 = t->y; m->c4 = t->z;
-
-									m->d1 = 0; m->d2 = 0; m->d3 = 0; m->d4 = 1;
-								}
+								// unsigned int loadmaterial(struct aiMaterial *material)
+								// {
+								// 	dprintf(1, "loadmaterial called\n");
+								// 	// return loadtexture("/nfs/zfs-student-3/users/2014/achazal/bomberman/ressources/objs/Bomberman/body.png");
+								// 	char filename[2000];
+								// 	struct aiString str;
+								// 	if (!aiGetMaterialString(material, AI_MATKEY_TEXTURE_DIFFUSE(0), &str)) {
+								// 		dprintf(1, "Condition ok\n");
+								// 		char *s = strrchr(str.data, '/');
+								// 		if (!s) s = strrchr(str.data, '\\');
+								// 		if (!s) s = str.data; else s++;
+								// 		strcpy(filename, basedir);
+								// 		strcat(filename, s);
+								// 		dprintf(1, "loading [%s]\n", filename);
+								// 		return loadtexture(filename);
+								// 	}
+								// 	return 0;
+								// }
 
 /*
  * Init, animate and draw aiScene.
@@ -582,10 +500,10 @@ void perspective(float fov, float aspect, float znear, float zfar)
 	glFrustum(-fov * aspect, fov * aspect, -fov, fov, znear, zfar);
 }
 
-void orthogonal(float fov, float aspect, float znear, float zfar)
-{
-	glOrtho(-fov * aspect, fov * aspect, -fov, fov, znear, zfar);
-}
+// void orthogonal(float fov, float aspect, float znear, float zfar)
+// {
+// 	glOrtho(-fov * aspect, fov * aspect, -fov, fov, znear, zfar);
+// }
 
 // void drawstring(float x, float y, char *s)
 // {
@@ -648,27 +566,27 @@ void orthogonal(float fov, float aspect, float znear, float zfar)
 																															{
 																																switch (key) {
 																																case 27: case 'q': exit(1); break;
-																																case 'h': case '?': showhelp = !showhelp; break;
+																																// case 'h': case '?': showhelp = !showhelp; break;
 																																// case 'f': togglefullscreen(); break;
-																																case 'i': doperspective = 0; camera.yaw = 45; camera.pitch = -DIMETRIC; break;
-																																case 'I': doperspective = 0; camera.yaw = 45; camera.pitch = -ISOMETRIC; break;
-																																case 'p': doperspective = !doperspective; break;
-																																case '0': animtick = 0; animfps = 30; break;
-																																case '1': case '2': case '3': case '4':
-																																case '5': case '6': case '7': case '8':
-																																case '9': setanim(key - '1'); break;
-																																case ' ': playing = !playing; break;
-																																case '.': animtick = floor(animtick) + 1; break;
-																																case ',': animtick = floor(animtick) - 1; break;
-																																case '[': animfps = MAX(5, animfps-5); break;
-																																case ']': animfps = MIN(60, animfps+5); break;
-																																case 'g': doplane = !doplane; break;
-																																case 't': dotexture = !dotexture; break;
-																																case 'A': doalpha--; break;
-																																case 'a': doalpha++; break;
-																																case 'w': dowire = !dowire; break;
-																																case 'b': dobackface = !dobackface; break;
-																																case 'l': dotwosided = !dotwosided; break;
+																																// case 'i': doperspective = 0; camera.yaw = 45; camera.pitch = -DIMETRIC; break;
+																																// case 'I': doperspective = 0; camera.yaw = 45; camera.pitch = -ISOMETRIC; break;
+																																// case 'p': doperspective = !doperspective; break;
+																																// case '0': animtick = 0; animfps = 30; break;
+																																// case '1': case '2': case '3': case '4':
+																																// case '5': case '6': case '7': case '8':
+																																// case '9': setanim(key - '1'); break;
+																																// case ' ': playing = !playing; break;
+																																// case '.': animtick = floor(animtick) + 1; break;
+																																// case ',': animtick = floor(animtick) - 1; break;
+																																// case '[': animfps = MAX(5, animfps-5); break;
+																																// case ']': animfps = MIN(60, animfps+5); break;
+																																// case 'g': doplane = !doplane; break;
+																																// case 't': dotexture = !dotexture; break;
+																																// case 'A': doalpha--; break;
+																																// case 'a': doalpha++; break;
+																																// case 'w': dowire = !dowire; break;
+																																// case 'b': dobackface = !dobackface; break;
+																																// case 'l': dotwosided = !dotwosided; break;
 																																}
 
 																																if (playing)
@@ -719,10 +637,10 @@ void display(void)
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	if (doperspective)
+	// if (doperspective)
 		perspective(50, (float)screenw/screenh, mindist/5, maxdist*5);
-	else
-		orthogonal(camera.distance/2, (float)screenw/screenh, mindist/5, maxdist*5);
+	// else
+	// 	orthogonal(camera.distance/2, (float)screenw/screenh, mindist/5, maxdist*5);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
