@@ -130,7 +130,7 @@
  */
 
 // convert 4x4 to column major format for opengl
-								void transposematrix(float m[16], struct aiMatrix4x4 *p)
+								void transposematrix(float m[16], aiMatrix4x4 *p)
 								{
 									m[0] = p->a1; m[4] = p->a2; m[8] = p->a3; m[12] = p->a4;
 									m[1] = p->b1; m[5] = p->b2; m[9] = p->b3; m[13] = p->b4;
@@ -138,26 +138,26 @@
 									m[3] = p->d1; m[7] = p->d2; m[11] = p->d3; m[15] = p->d4;
 								}
 
-								void extract3x3(struct aiMatrix3x3 *m3, struct aiMatrix4x4 *m4)
+								void extract3x3(aiMatrix3x3 *m3, aiMatrix4x4 *m4)
 								{
 									m3->a1 = m4->a1; m3->a2 = m4->a2; m3->a3 = m4->a3;
 									m3->b1 = m4->b1; m3->b2 = m4->b2; m3->b3 = m4->b3;
 									m3->c1 = m4->c1; m3->c2 = m4->c2; m3->c3 = m4->c3;
 								}
 
-								void mixvector(struct aiVector3D *p, struct aiVector3D *a, struct aiVector3D *b, float t)
+								void mixvector(aiVector3D *p, aiVector3D *a, aiVector3D *b, float t)
 								{
 									p->x = a->x + t * (b->x - a->x);
 									p->y = a->y + t * (b->y - a->y);
 									p->z = a->z + t * (b->z - a->z);
 								}
 
-								float dotquaternions(struct aiQuaternion *a, struct aiQuaternion *b)
+								float dotquaternions(aiQuaternion *a, aiQuaternion *b)
 								{
 									return a->x*b->x + a->y*b->y + a->z*b->z + a->w*b->w;
 								}
 
-								void normalizequaternion(struct aiQuaternion *q)
+								void normalizequaternion(aiQuaternion *q)
 								{
 									float d = sqrt(dotquaternions(q, q));
 									if (d >= 0.00001) {
@@ -172,9 +172,9 @@
 									}
 								}
 
-								void mixquaternion(struct aiQuaternion *q, struct aiQuaternion *a, struct aiQuaternion *b, float t)
+								void mixquaternion(aiQuaternion *q, aiQuaternion *a, aiQuaternion *b, float t)
 								{
-									struct aiQuaternion tmp;
+									aiQuaternion tmp;
 									if (dotquaternions(a, b) < 0) {
 										tmp.x = -a->x; tmp.y = -a->y; tmp.z = -a->z; tmp.w = -a->w;
 										a = &tmp;
@@ -186,8 +186,8 @@
 									normalizequaternion(q);
 								}
 
-								void composematrix(struct aiMatrix4x4 *m,
-									struct aiVector3D *t, struct aiQuaternion *q, struct aiVector3D *s)
+								void composematrix(aiMatrix4x4 *m,
+									aiVector3D *t, aiQuaternion *q, aiVector3D *s)
 								{
 									// quat to rotation matrix
 									m->a1 = 1 - 2 * (q->y * q->y + q->z * q->z);
@@ -248,7 +248,7 @@ struct aiNode *findnode(struct aiNode *node, char *name)
 }
 
 // calculate absolute transform for node to do mesh skinning
-void transformnode(struct aiMatrix4x4 *result, struct aiNode *node)
+void transformnode(aiMatrix4x4 *result, struct aiNode *node)
 {
 	if (node->mParent) {
 		transformnode(result, node->mParent);
@@ -261,8 +261,8 @@ void transformnode(struct aiMatrix4x4 *result, struct aiNode *node)
 void transformmesh(struct aiScene *scene, struct mesh *mesh)
 {
 	struct aiMesh *amesh = mesh->mesh;
-	struct aiMatrix4x4 skin4;
-	struct aiMatrix3x3 skin3;
+	aiMatrix4x4 skin4;
+	aiMatrix3x3 skin3;
 	int i, k;
 
 	if (amesh->mNumBones == 0)
@@ -283,13 +283,13 @@ void transformmesh(struct aiScene *scene, struct mesh *mesh)
 			int v = bone->mWeights[i].mVertexId;
 			float w = bone->mWeights[i].mWeight;
 
-			struct aiVector3D position = amesh->mVertices[v];
+			aiVector3D position = amesh->mVertices[v];
 			aiTransformVecByMatrix4(&position, &skin4);
 			mesh->position[v*3+0] += position.x * w;
 			mesh->position[v*3+1] += position.y * w;
 			mesh->position[v*3+2] += position.z * w;
 
-			struct aiVector3D normal = amesh->mNormals[v];
+			aiVector3D normal = amesh->mNormals[v];
 			aiTransformVecByMatrix3(&normal, &skin3);
 			mesh->normal[v*3+0] += normal.x * w;
 			mesh->normal[v*3+1] += normal.y * w;
@@ -310,9 +310,9 @@ void initmesh(struct aiScene *scene, struct mesh *mesh, struct aiMesh *amesh)
 	mesh->texture = loadmaterial(scene->mMaterials[amesh->mMaterialIndex]);
 
 	mesh->vertexcount = amesh->mNumVertices;
-	mesh->position = calloc(mesh->vertexcount * 3, sizeof(float));
-	mesh->normal = calloc(mesh->vertexcount * 3, sizeof(float));
-	mesh->texcoord = calloc(mesh->vertexcount * 2, sizeof(float));
+	mesh->position = (float *)calloc(mesh->vertexcount * 3, sizeof(float));
+	mesh->normal = (float *)calloc(mesh->vertexcount * 3, sizeof(float));
+	mesh->texcoord = (float *)calloc(mesh->vertexcount * 2, sizeof(float));
 
 	for (i = 0; i < mesh->vertexcount; i++) {
 		mesh->position[i*3+0] = amesh->mVertices[i].x;
@@ -332,7 +332,7 @@ void initmesh(struct aiScene *scene, struct mesh *mesh, struct aiMesh *amesh)
 	}
 
 	mesh->elementcount = amesh->mNumFaces * 3;
-	mesh->element = calloc(mesh->elementcount, sizeof(int));
+	mesh->element = (int *)calloc(mesh->elementcount, sizeof(int));
 
 	for (i = 0; i < amesh->mNumFaces; i++) {
 		struct aiFace *face = amesh->mFaces + i;
@@ -346,7 +346,7 @@ void initscene(struct aiScene *scene)
 {
 	int i;
 	meshcount = scene->mNumMeshes;
-	meshlist = calloc(meshcount, sizeof *meshlist);
+	meshlist = (struct mesh *)calloc(meshcount, sizeof (*meshlist));
 	for (i = 0; i < meshcount; i++) {
 		initmesh(scene, meshlist + i, scene->mMeshes[i]);
 		transformmesh(scene, meshlist + i);
@@ -368,7 +368,7 @@ void drawmesh(struct mesh *mesh)
 	glDrawElements(GL_TRIANGLES, mesh->elementcount, GL_UNSIGNED_INT, mesh->element);
 }
 
-void drawnode(struct aiNode *node, struct aiMatrix4x4 world)
+void drawnode(aiNode *node, aiMatrix4x4 world)
 {
 	float mat[16];
 	int i;
@@ -396,7 +396,7 @@ void drawnode(struct aiNode *node, struct aiMatrix4x4 world)
 
 void drawscene(struct aiScene *scene)
 {
-	struct aiMatrix4x4 world;
+	aiMatrix4x4 world;
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -410,9 +410,9 @@ void drawscene(struct aiScene *scene)
 	glDisableClientState(GL_NORMAL_ARRAY);
 }
 
-void measuremesh(struct mesh *mesh, struct aiMatrix4x4 transform, float bboxmin[3], float bboxmax[3])
+void measuremesh(struct mesh *mesh, aiMatrix4x4 transform, float bboxmin[3], float bboxmax[3])
 {
-	struct aiVector3D p;
+	aiVector3D p;
 	int i;
 	for (i = 0; i < mesh->vertexcount; i++) {
 		p.x = mesh->position[i*3+0];
@@ -428,9 +428,9 @@ void measuremesh(struct mesh *mesh, struct aiMatrix4x4 transform, float bboxmin[
 	}
 }
 
-void measurenode(struct aiNode *node, struct aiMatrix4x4 world, float bboxmin[3], float bboxmax[3])
+void measurenode(aiNode *node, aiMatrix4x4 world, float bboxmin[3], float bboxmax[3])
 {
-	struct aiMatrix4x4 identity;
+	aiMatrix4x4 identity;
 	int i;
 
 	aiMultiplyMatrix4(&world, &node->mTransformation);
@@ -453,7 +453,7 @@ void measurenode(struct aiNode *node, struct aiMatrix4x4 world, float bboxmin[3]
 
 float measurescene(struct aiScene *scene, float center[3])
 {
-	struct aiMatrix4x4 world;
+	aiMatrix4x4 world;
 	float bboxmin[3];
 	float bboxmax[3];
 	float dx, dy, dz;
@@ -492,8 +492,8 @@ void animatescene(struct aiScene *scene, struct aiAnimation *anim, float tick)
 {
 	struct aiVectorKey *p0, *p1, *s0, *s1;
 	struct aiQuatKey *r0, *r1;
-	struct aiVector3D p, s;
-	struct aiQuaternion r;
+	aiVector3D p, s;
+	aiQuaternion r;
 	int i;
 
 	// Assumes even key frame rate and synchronized pos/rot/scale keys.
@@ -595,14 +595,14 @@ void drawstring(float x, float y, char *s)
 		glutBitmapCharacter(GLUT_BITMAP_8_BY_13, *s++);
 }
 
-void mouse(int button, int state, int x, int y)
-{
-	if (button == GLUT_LEFT_BUTTON) mouseleft = state == GLUT_DOWN;
-	if (button == GLUT_MIDDLE_BUTTON) mousemiddle = state == GLUT_DOWN;
-	if (button == GLUT_RIGHT_BUTTON) mouseright = state == GLUT_DOWN;
-	mousex = x;
-	mousey = y;
-}
+																															// void mouse(int button, int state, int x, int y)
+																															// {
+																															// 	if (button == GLUT_LEFT_BUTTON) mouseleft = state == GLUT_DOWN;
+																															// 	if (button == GLUT_MIDDLE_BUTTON) mousemiddle = state == GLUT_DOWN;
+																															// 	if (button == GLUT_RIGHT_BUTTON) mouseright = state == GLUT_DOWN;
+																															// 	mousex = x;
+																															// 	mousey = y;
+																															// }
 
 void motion(int x, int y)
 {
@@ -686,12 +686,12 @@ void special(int key, int x, int y)
 	glutPostRedisplay();
 }
 
-void reshape(int w, int h)
-{
-	screenw = w;
-	screenh = h;
-	glViewport(0, 0, w, h);
-}
+																																// void reshape(int w, int h)
+																																// {
+																																// 	screenw = w;
+																																// 	screenh = h;
+																																// 	glViewport(0, 0, w, h);
+																																// }
 
 void display(void)
 {
@@ -930,7 +930,7 @@ int main(int argc, char **argv)
 #ifdef __APPLE__
 	int one = 1;
 	void *ctx = CGLGetCurrentContext();
-	CGLSetParameter(ctx, kCGLCPSwapInterval, &one);
+	// CGLSetParameter(ctx, kCGLCPSwapInterval, &one);
 #endif
 
 	initchecker();
@@ -972,9 +972,9 @@ int main(int argc, char **argv)
 	glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
 	glClearColor(clearcolor[0], clearcolor[1], clearcolor[2], clearcolor[3]);
 
-	glutReshapeFunc(reshape);
+																																						// glutReshapeFunc(reshape);
 	glutDisplayFunc(display);
-	glutMouseFunc(mouse);
+																																						// glutMouseFunc(mouse);
 	glutMotionFunc(motion);
 	glutKeyboardFunc(keyboard);
 	glutSpecialFunc(special);
