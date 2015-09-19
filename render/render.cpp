@@ -34,17 +34,11 @@
 extern char basedir[2000];
 extern unsigned int checker_texture;
 
-
-extern int vertexcount, facecount; // for statistics only
-
-// opengl (and skinned vertex) buffers for the meshes
 extern int meshcount;
-// int meshcount = 0;
 
 #include <maths/matrix.hpp>
 #include <texturesLoading/texturesLoading.hpp>
 #include <scene/scene.hpp>
-// #include <render/render.hpp>
 
 
 extern struct mesh *meshlist;
@@ -56,7 +50,6 @@ extern int animfps, animlen;
 extern float animtick;
 extern int playing;
 
-extern int showhelp;
 extern int doplane;
 extern int doalpha;
 extern int dowire;
@@ -74,13 +67,7 @@ extern float maxdist;
 
 extern float light_position[4];
 
-#define DIMETRIC 30		// 2:1 'isometric' as seen in pixel art
-// struct {
-// 	float distance;
-// 	float yaw;
-// 	float pitch;
-// 	float center[3];
-// }	camera = { 3, 45, -DIMETRIC, { 0, 1, 0 } };
+#define DIMETRIC 30
 
 struct {
 	float distance;
@@ -110,22 +97,6 @@ void perspective(float fov, float aspect, float znear, float zfar)
 	glFrustum(-fov * aspect, fov * aspect, -fov, fov, znear, zfar);
 }
 
-// extern struct {
-// 	float distance;
-// 	float yaw;
-// 	float pitch;
-// 	float center[3];
-// } camera;
-
-// #define DIMETRIC 30		// 2:1 'isometric' as seen in pixel art
-// struct {
-// 	float distance;
-// 	float yaw;
-// 	float pitch;
-// 	float center[3];
-// } camera = { 3, 45, -DIMETRIC, { 0, 1, 0 } };
-
-
 void display(void)
 {
 	char buf[256];
@@ -152,11 +123,9 @@ void display(void)
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	// if (doperspective)
+	
 		perspective(50, (float)screenw/screenh, mindist/5, maxdist*5);
-	// else
-	// 	orthogonal(camera.distance/2, (float)screenw/screenh, mindist/5, maxdist*5);
-
+	
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
@@ -270,39 +239,7 @@ void display(void)
 	glLoadIdentity();
 
 	glColor4f(1, 1, 1, 1);
-	if (g_scene) {
-		sprintf(buf, "%d meshes; %d vertices; %d faces ", meshcount, vertexcount, facecount);
-		// drawstring(8, 18+0, buf);
-		if (curanim) {
-			sprintf(buf, "frame %03d / %03d (%d fps)", (int)animtick+1, animlen, animfps);
-			// drawstring(8, 18+20, buf);
-		}
-	} else {
-		// drawstring(8, 18, "No model loaded!");
-	}
-
-	if (showhelp) {
-		#define Y(n) 18+40+n*16
-		glColor4f(1, 1, 0.5, 1);
-		// drawstring(8, Y(0), "a - change transparency mode");
-		// drawstring(8, Y(1), "t - toggle textures");
-		// drawstring(8, Y(2), "w - toggle wireframe");
-		// drawstring(8, Y(3), "b - toggle backface culling");
-		// drawstring(8, Y(4), "l - toggle two-sided lighting");
-		// drawstring(8, Y(5), "g - toggle ground plane");
-		// drawstring(8, Y(6), "p - toggle orthogonal/perspective camera");
-		// drawstring(8, Y(7), "i - set up dimetric camera (2:1)");
-		// drawstring(8, Y(8), "I - set up isometric camera");
-
-		if (1|| curanim) {
-			// drawstring(8, Y(10), "space - play/pause animation");
-			// drawstring(8, Y(11), "[ and ] - change animation playback speed");
-			// drawstring(8, Y(12), ", and . - single step animation");
-		}
-	}
-
 	glutSwapBuffers();
 
-	i = glGetError();
-	if (i) fprintf(stderr, "opengl error: %d\n", i);
+	if ((i = glGetError())) fprintf(stderr, "opengl error: %d\n", i);
 }

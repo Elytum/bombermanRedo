@@ -44,7 +44,7 @@ struct {
 char basedir[2000];
 unsigned int checker_texture = 0;
 
-int vertexcount = 0, facecount = 0; // for statistics only
+// int vertexcount = 0, facecount = 0; // for statistics only
 
 // opengl (and skinned vertex) buffers for the meshes
 int meshcount = 0;
@@ -57,11 +57,6 @@ int meshcount = 0;
 
 extern struct mesh *meshlist;
 
-/*
- * Boring UI and GLUT hooks.
- */
-
-#include "external_librairies/getopt/getopt.c"
 
 #define ISOMETRIC 35.264	// true isometric view
 
@@ -72,7 +67,7 @@ int animfps = 30, animlen = 0;
 float animtick = 0;
 int playing = 1;
 
-int showhelp = 0;
+// int showhelp = 0;
 int doplane = 0;
 int doalpha = 0;
 int dowire = 0;
@@ -93,100 +88,60 @@ float light_position[4] = { -1, 2, 2, 0 };
 void keyboard(unsigned char key, int x, int y)
 {
 	switch (key) {
-	case 27: case 'q': exit(1); break;
-	// case 'h': case '?': showhelp = !showhelp; break;
-	// case 'f': togglefullscreen(); break;
-	// case 'i': doperspective = 0; camera.yaw = 45; camera.pitch = -DIMETRIC; break;
-	// case 'I': doperspective = 0; camera.yaw = 45; camera.pitch = -ISOMETRIC; break;
-	// case 'p': doperspective = !doperspective; break;
-	// case '0': animtick = 0; animfps = 30; break;
-	// case '1': case '2': case '3': case '4':
-	// case '5': case '6': case '7': case '8':
-	// case '9': setanim(key - '1'); break;
-	// case ' ': playing = !playing; break;
-	// case '.': animtick = floor(animtick) + 1; break;
-	// case ',': animtick = floor(animtick) - 1; break;
-	// case '[': animfps = MAX(5, animfps-5); break;
-	// case ']': animfps = MIN(60, animfps+5); break;
-	// case 'g': doplane = !doplane; break;
-	// case 't': dotexture = !dotexture; break;
-	// case 'A': doalpha--; break;
-	// case 'a': doalpha++; break;
-	// case 'w': dowire = !dowire; break;
-	// case 'b': dobackface = !dobackface; break;
-	// case 'l': dotwosided = !dotwosided; break;
+		case 27: case 'q': exit(1); break;
 	}
 
 	if (playing)
 		lasttime = glutGet(GLUT_ELAPSED_TIME);
-
-	// glutPostRedisplay();
 }
 
-int main(int argc, char **argv)
+#define PATH "ressources/ArmyPilot.dae"
+
+int main(int ac, char **av)
 {
 	float clearcolor[4] = { 0.22, 0.22, 0.22, 1.0 };
 	float zoom = 1;
-	int c;
+	// int c;
 
 	glutInitWindowPosition(50, 50+24);
 	glutInitWindowSize(screenw, screenh);
-	glutInit(&argc, argv);
+	glutInit(&ac, av);
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
 
-	while ((c = getopt(argc, argv, "iIgtawblc:r:p:z:f:")) != -1) {
-		switch (c) {
-		case 'i': doperspective = 0; camera.yaw = 45; camera.pitch = -DIMETRIC; break;
-		case 'I': doperspective = 0; camera.yaw = 45; camera.pitch = -ISOMETRIC; break;
-		case 'g': doplane = 1; break;
-		case 't': dotexture = 0; break;
-		case 'a': doalpha++; break;
-		case 'w': dowire = 1; break;
-		case 'b': dobackface = 0; break;
-		case 'l': dotwosided = 0; break;
-		case 'c': sscanf(optarg, "%g,%g,%g", clearcolor+0, clearcolor+1, clearcolor+2); break;
-		case 'r': camera.yaw = atof(optarg); break;
-		case 'p': camera.pitch = atof(optarg); break;
-		case 'z': zoom = atof(optarg); break;
-		case 'f': animtick = atof(optarg); break;
-		}
-	}
+	// while ((c = getopt(argc, argv, "iIgtawblc:r:p:z:f:")) != -1) {
+	// }
 
-	glutCreateWindow("Asset Viewer");
+	glutCreateWindow("Bomberman 3D");
 	screenw = glutGet(GLUT_WINDOW_WIDTH);
 	screenh = glutGet(GLUT_WINDOW_HEIGHT);
 
 	initchecker();
 
-	if (optind < argc) {
-		int flags = aiProcess_Triangulate;
-		flags |= aiProcess_JoinIdenticalVertices;
-		flags |= aiProcess_GenSmoothNormals;
-		flags |= aiProcess_GenUVCoords;
-		flags |= aiProcess_TransformUVCoords;
-		flags |= aiProcess_RemoveComponent;
+	int flags = aiProcess_Triangulate;
+	flags |= aiProcess_JoinIdenticalVertices;
+	flags |= aiProcess_GenSmoothNormals;
+	flags |= aiProcess_GenUVCoords;
+	flags |= aiProcess_TransformUVCoords;
+	flags |= aiProcess_RemoveComponent;
 
-		strcpy(basedir, argv[1]);
-		char *p = strrchr(basedir, '/');
-		if (!p) p = strrchr(basedir, '\\');
-		if (!p) strcpy(basedir, ""); else p[1] = 0;
+	strcpy(basedir, PATH);
+	char *p = strrchr(basedir, '/');
+	if (!p) p = strrchr(basedir, '\\');
+	if (!p) strcpy(basedir, ""); else p[1] = 0;
 
-		glutSetWindowTitle(argv[1]);
+	g_scene = (struct aiScene*) aiImportFile(PATH, flags);
+	if (g_scene) {
+		initscene(g_scene);
 
-		g_scene = (struct aiScene*) aiImportFile(argv[optind], flags);
-		if (g_scene) {
-			initscene(g_scene);
+		float radius = measurescene(g_scene, camera.center);
+		camera.distance = radius * 2 * zoom;
+		gridsize = (int)radius + 1;
+		mindist = radius * 0.1;
+		maxdist = radius * 10;
 
-			float radius = measurescene(g_scene, camera.center);
-			camera.distance = radius * 2 * zoom;
-			gridsize = (int)radius + 1;
-			mindist = radius * 0.1;
-			maxdist = radius * 10;
-
-			setanim(0);
-		} else {
-			fprintf(stderr, "cannot import scene: '%s'\n", argv[1]);
-		}
+		setanim(0);
+	} else {
+		fprintf(stderr, "cannot import scene: '%s'\n", PATH);
 	}
 
 	glEnable(GL_MULTISAMPLE);

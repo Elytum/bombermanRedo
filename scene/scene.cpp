@@ -106,9 +106,6 @@ void initmesh(struct aiScene *scene, struct mesh *mesh, struct aiMesh *amesh)
 {
 	int i;
 
-	vertexcount += amesh->mNumVertices;
-	facecount += amesh->mNumFaces;
-
 	mesh->mesh = amesh; // stow away pointer for bones
 
 	mesh->texture = loadmaterial(scene->mMaterials[amesh->mMaterialIndex]);
