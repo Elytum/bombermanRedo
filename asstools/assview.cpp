@@ -587,13 +587,13 @@ void orthogonal(float fov, float aspect, float znear, float zfar)
 	glOrtho(-fov * aspect, fov * aspect, -fov, fov, znear, zfar);
 }
 
-void drawstring(float x, float y, char *s)
-{
-	glRasterPos2f(x+0.375, y+0.375);
-	while (*s)
-		//glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, *s++);
-		glutBitmapCharacter(GLUT_BITMAP_8_BY_13, *s++);
-}
+// void drawstring(float x, float y, char *s)
+// {
+// 	glRasterPos2f(x+0.375, y+0.375);
+// 	while (*s)
+// 		//glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, *s++);
+// 		glutBitmapCharacter(GLUT_BITMAP_8_BY_13, *s++);
+// }
 
 																															// void mouse(int button, int state, int x, int y)
 																															// {
@@ -604,94 +604,94 @@ void drawstring(float x, float y, char *s)
 																															// 	mousey = y;
 																															// }
 
-void motion(int x, int y)
-{
-	int dx = x - mousex;
-	int dy = y - mousey;
-	if (mouseleft) {
-		camera.yaw -= dx * 0.3;
-		camera.pitch -= dy * 0.2;
-		if (camera.pitch < -85) camera.pitch = -85;
-		if (camera.pitch > 85) camera.pitch = 85;
-		if (camera.yaw < 0) camera.yaw += 360;
-		if (camera.yaw > 360) camera.yaw -= 360;
-	}
-	if (mousemiddle || mouseright) {
-		camera.distance += dy * 0.01 * camera.distance;
-		if (camera.distance < mindist) camera.distance = mindist;
-		if (camera.distance > maxdist) camera.distance = maxdist;
-	}
-	mousex = x;
-	mousey = y;
-	glutPostRedisplay();
-}
+																															// void motion(int x, int y)
+																															// {
+																															// 	int dx = x - mousex;
+																															// 	int dy = y - mousey;
+																															// 	if (mouseleft) {
+																															// 		camera.yaw -= dx * 0.3;
+																															// 		camera.pitch -= dy * 0.2;
+																															// 		if (camera.pitch < -85) camera.pitch = -85;
+																															// 		if (camera.pitch > 85) camera.pitch = 85;
+																															// 		if (camera.yaw < 0) camera.yaw += 360;
+																															// 		if (camera.yaw > 360) camera.yaw -= 360;
+																															// 	}
+																															// 	if (mousemiddle || mouseright) {
+																															// 		camera.distance += dy * 0.01 * camera.distance;
+																															// 		if (camera.distance < mindist) camera.distance = mindist;
+																															// 		if (camera.distance > maxdist) camera.distance = maxdist;
+																															// 	}
+																															// 	mousex = x;
+																															// 	mousey = y;
+																															// 	glutPostRedisplay();
+																															// }
 
-void togglefullscreen(void)
-{
-	static int oldw = 100, oldh = 100;
-	static int oldx = 0, oldy = 0;
-	static int isfullscreen = 0;
-	if (!isfullscreen) {
-		oldw = screenw;
-		oldh = screenh;
-		oldx = glutGet(GLUT_WINDOW_X);
-		oldy = glutGet(GLUT_WINDOW_Y);
-		glutFullScreen();
-	} else {
-		glutPositionWindow(oldx, oldy);
-		glutReshapeWindow(oldw, oldh);
-	}
-	isfullscreen = !isfullscreen;
-}
+// void togglefullscreen(void)
+// {
+// 	static int oldw = 100, oldh = 100;
+// 	static int oldx = 0, oldy = 0;
+// 	static int isfullscreen = 0;
+// 	if (!isfullscreen) {
+// 		oldw = screenw;
+// 		oldh = screenh;
+// 		oldx = glutGet(GLUT_WINDOW_X);
+// 		oldy = glutGet(GLUT_WINDOW_Y);
+// 		glutFullScreen();
+// 	} else {
+// 		glutPositionWindow(oldx, oldy);
+// 		glutReshapeWindow(oldw, oldh);
+// 	}
+// 	isfullscreen = !isfullscreen;
+// }
 
-void keyboard(unsigned char key, int x, int y)
-{
-	switch (key) {
-	case 27: case 'q': exit(1); break;
-	case 'h': case '?': showhelp = !showhelp; break;
-	case 'f': togglefullscreen(); break;
-	case 'i': doperspective = 0; camera.yaw = 45; camera.pitch = -DIMETRIC; break;
-	case 'I': doperspective = 0; camera.yaw = 45; camera.pitch = -ISOMETRIC; break;
-	case 'p': doperspective = !doperspective; break;
-	case '0': animtick = 0; animfps = 30; break;
-	case '1': case '2': case '3': case '4':
-	case '5': case '6': case '7': case '8':
-	case '9': setanim(key - '1'); break;
-	case ' ': playing = !playing; break;
-	case '.': animtick = floor(animtick) + 1; break;
-	case ',': animtick = floor(animtick) - 1; break;
-	case '[': animfps = MAX(5, animfps-5); break;
-	case ']': animfps = MIN(60, animfps+5); break;
-	case 'g': doplane = !doplane; break;
-	case 't': dotexture = !dotexture; break;
-	case 'A': doalpha--; break;
-	case 'a': doalpha++; break;
-	case 'w': dowire = !dowire; break;
-	case 'b': dobackface = !dobackface; break;
-	case 'l': dotwosided = !dotwosided; break;
-	}
+																															void keyboard(unsigned char key, int x, int y)
+																															{
+																																switch (key) {
+																																case 27: case 'q': exit(1); break;
+																																case 'h': case '?': showhelp = !showhelp; break;
+																																// case 'f': togglefullscreen(); break;
+																																case 'i': doperspective = 0; camera.yaw = 45; camera.pitch = -DIMETRIC; break;
+																																case 'I': doperspective = 0; camera.yaw = 45; camera.pitch = -ISOMETRIC; break;
+																																case 'p': doperspective = !doperspective; break;
+																																case '0': animtick = 0; animfps = 30; break;
+																																case '1': case '2': case '3': case '4':
+																																case '5': case '6': case '7': case '8':
+																																case '9': setanim(key - '1'); break;
+																																case ' ': playing = !playing; break;
+																																case '.': animtick = floor(animtick) + 1; break;
+																																case ',': animtick = floor(animtick) - 1; break;
+																																case '[': animfps = MAX(5, animfps-5); break;
+																																case ']': animfps = MIN(60, animfps+5); break;
+																																case 'g': doplane = !doplane; break;
+																																case 't': dotexture = !dotexture; break;
+																																case 'A': doalpha--; break;
+																																case 'a': doalpha++; break;
+																																case 'w': dowire = !dowire; break;
+																																case 'b': dobackface = !dobackface; break;
+																																case 'l': dotwosided = !dotwosided; break;
+																																}
 
-	if (playing)
-		lasttime = glutGet(GLUT_ELAPSED_TIME);
+																																if (playing)
+																																	lasttime = glutGet(GLUT_ELAPSED_TIME);
 
-	glutPostRedisplay();
-}
+																																// glutPostRedisplay();
+																															}
 
-void special(int key, int x, int y)
-{
-	switch (key) {
-	case GLUT_KEY_F4: exit(1); break;
-	case GLUT_KEY_F1: showhelp = !showhelp; break;
-	}
-	glutPostRedisplay();
-}
+// void special(int key, int x, int y)
+// {
+// 	switch (key) {
+// 	case GLUT_KEY_F4: exit(1); break;
+// 	case GLUT_KEY_F1: showhelp = !showhelp; break;
+// 	}
+	// glutPostRedisplay();
+// }
 
-																																// void reshape(int w, int h)
-																																// {
-																																// 	screenw = w;
-																																// 	screenh = h;
-																																// 	glViewport(0, 0, w, h);
-																																// }
+																																void reshape(int w, int h)
+																																{
+																																	screenw = w;
+																																	screenh = h;
+																																	glViewport(0, 0, w, h);
+																																}
 
 void display(void)
 {
@@ -839,32 +839,32 @@ void display(void)
 	glColor4f(1, 1, 1, 1);
 	if (g_scene) {
 		sprintf(buf, "%d meshes; %d vertices; %d faces ", meshcount, vertexcount, facecount);
-		drawstring(8, 18+0, buf);
+		// drawstring(8, 18+0, buf);
 		if (curanim) {
 			sprintf(buf, "frame %03d / %03d (%d fps)", (int)animtick+1, animlen, animfps);
-			drawstring(8, 18+20, buf);
+			// drawstring(8, 18+20, buf);
 		}
 	} else {
-		drawstring(8, 18, "No model loaded!");
+		// drawstring(8, 18, "No model loaded!");
 	}
 
 	if (showhelp) {
 		#define Y(n) 18+40+n*16
 		glColor4f(1, 1, 0.5, 1);
-		drawstring(8, Y(0), "a - change transparency mode");
-		drawstring(8, Y(1), "t - toggle textures");
-		drawstring(8, Y(2), "w - toggle wireframe");
-		drawstring(8, Y(3), "b - toggle backface culling");
-		drawstring(8, Y(4), "l - toggle two-sided lighting");
-		drawstring(8, Y(5), "g - toggle ground plane");
-		drawstring(8, Y(6), "p - toggle orthogonal/perspective camera");
-		drawstring(8, Y(7), "i - set up dimetric camera (2:1)");
-		drawstring(8, Y(8), "I - set up isometric camera");
+		// drawstring(8, Y(0), "a - change transparency mode");
+		// drawstring(8, Y(1), "t - toggle textures");
+		// drawstring(8, Y(2), "w - toggle wireframe");
+		// drawstring(8, Y(3), "b - toggle backface culling");
+		// drawstring(8, Y(4), "l - toggle two-sided lighting");
+		// drawstring(8, Y(5), "g - toggle ground plane");
+		// drawstring(8, Y(6), "p - toggle orthogonal/perspective camera");
+		// drawstring(8, Y(7), "i - set up dimetric camera (2:1)");
+		// drawstring(8, Y(8), "I - set up isometric camera");
 
 		if (1|| curanim) {
-			drawstring(8, Y(10), "space - play/pause animation");
-			drawstring(8, Y(11), "[ and ] - change animation playback speed");
-			drawstring(8, Y(12), ", and . - single step animation");
+			// drawstring(8, Y(10), "space - play/pause animation");
+			// drawstring(8, Y(11), "[ and ] - change animation playback speed");
+			// drawstring(8, Y(12), ", and . - single step animation");
 		}
 	}
 
@@ -927,11 +927,11 @@ int main(int argc, char **argv)
 	screenw = glutGet(GLUT_WINDOW_WIDTH);
 	screenh = glutGet(GLUT_WINDOW_HEIGHT);
 
-#ifdef __APPLE__
-	int one = 1;
-	void *ctx = CGLGetCurrentContext();
+// #ifdef __APPLE__
+	// int one = 1;
+	// void *ctx = CGLGetCurrentContext();
 	// CGLSetParameter(ctx, kCGLCPSwapInterval, &one);
-#endif
+// #endif
 
 	initchecker();
 
@@ -972,13 +972,13 @@ int main(int argc, char **argv)
 	glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
 	glClearColor(clearcolor[0], clearcolor[1], clearcolor[2], clearcolor[3]);
 
-																																						// glutReshapeFunc(reshape);
-	glutDisplayFunc(display);
+																																						glutReshapeFunc(reshape);
+																						glutDisplayFunc(display);
 																																						// glutMouseFunc(mouse);
-	glutMotionFunc(motion);
-	glutKeyboardFunc(keyboard);
-	glutSpecialFunc(special);
-	glutMainLoop();
+																																						// glutMotionFunc(motion);
+																																						glutKeyboardFunc(keyboard);
+																																						// glutSpecialFunc(special);
+																						glutMainLoop();
 
 	return 0;
 }
