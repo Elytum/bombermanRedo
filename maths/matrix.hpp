@@ -1,21 +1,41 @@
 #ifndef MATRIX_HPP
 # define MATRIX_HPP
 
-/*
- * Some extra matrix, vector and quaternion functions.
- *
- * Many of these already exist in some variant in assimp,
- * but not exported to the C interface.
- */
+#define TO_RADIAN(x) (x / 180.0f * M_PI)
+#include <maths/Vec3.hpp>
+#include <cmath>
+#include <Camera/Camera.hpp>
 
-// convert 4x4 to column major format for opengl
-void transposematrix(float m[16], aiMatrix4x4 *p);
-void extract3x3(aiMatrix3x3 *m3, aiMatrix4x4 *m4);
-void mixvector(aiVector3D *p, aiVector3D *a, aiVector3D *b, float t);
-float dotquaternions(aiQuaternion *a, aiQuaternion *b);
-void normalizequaternion(aiQuaternion *q);
-void mixquaternion(aiQuaternion *q, aiQuaternion *a, aiQuaternion *b, float t);
-void composematrix(aiMatrix4x4 *m,
-	aiVector3D *t, aiQuaternion *q, aiVector3D *s);
+class Matrix
+{
+	public:
+		static Matrix	identity(void);
+		static Matrix	createTransformationMatrix(float tra[3], float rot[3], float sca[3]);
+		static Matrix	createViewMatrix(Camera camera);
+		Matrix(void);
+		Matrix(	float a, float b, float c, float d,
+				float e, float f, float g, float h,
+				float i, float j, float k, float l,
+				float m, float n, float o, float p);
+		Matrix(float tab[16]);
+		~Matrix(void);
+		Matrix(const Matrix & cpy);
+		Matrix			matrix_rotate(Vec3 axis, float angle);
+		Matrix			matrix_combine(Matrix s);
+
+		// private:
+		// 	GLuint		vaoID;
+		// 	GLsizei		vertexCount;
+		float			*getDataLocation(void);
+		// Matrix			get_rotate_floats(Vec3 axis, float angle);
+		Matrix			copy(Matrix m);
+		Matrix			combine(Matrix m);
+		Matrix			translate(float x, float y, float z);
+		Matrix			rotate(Vec3 axis, float angle);
+		Matrix			scale(float x, float y, float z);
+		Matrix&			operator=(Matrix const & cpy);
+	private:
+		float			data[16];
+};
 
 #endif

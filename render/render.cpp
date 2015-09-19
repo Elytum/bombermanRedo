@@ -3,13 +3,7 @@
 #include <ctype.h>
 #include <math.h>
 
-#ifdef __APPLE__
-#include <OpenGL/OpenGL.h>
-#include <GLUT/glut.h>
-#else
-#include <GL/gl.h>
-#include <GL/freeglut.h>
-#endif
+#include <graphic.h>
 
 #ifndef GL_GENERATE_MIPMAP
 #define GL_GENERATE_MIPMAP 0x8191
@@ -97,7 +91,7 @@ void perspective(float fov, float aspect, float znear, float zfar)
 {
 	fov = fov * 3.14159 / 360.0;
 	fov = tan(fov) * znear;
-	glFrustum(-fov * aspect, fov * aspect, -fov, fov, znear, zfar);
+	// glFrustum(-fov * aspect, fov * aspect, -fov, fov, znear, zfar);
 }
 
 void display(void)

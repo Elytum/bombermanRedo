@@ -1,5 +1,5 @@
 #include <scene/scene.hpp>
-#include <maths/matrix.hpp>
+#include <maths/matrixWeird.hpp>
 #include <texturesLoading/texturesLoading.hpp>
 
 extern int checker_texture;
@@ -143,59 +143,59 @@ void initscene(struct aiScene *scene)
 
 void drawmesh(struct mesh *mesh)
 {
-	if (mesh->texture > 0) {
-		glColor4f(1, 1, 1, 1);
-		glBindTexture(GL_TEXTURE_2D, mesh->texture);
-	} else {
-		glColor4f(0.9, 0.7, 0.7, 1);
-		glBindTexture(GL_TEXTURE_2D, checker_texture);
-	}
-	glVertexPointer(3, GL_FLOAT, 0, mesh->position);
-	glNormalPointer(GL_FLOAT, 0, mesh->normal);
-	glTexCoordPointer(2, GL_FLOAT, 0, mesh->texcoord);
-	glDrawElements(GL_TRIANGLES, mesh->elementcount, GL_UNSIGNED_INT, mesh->element);
+	// if (mesh->texture > 0) {
+	// 	glColor4f(1, 1, 1, 1);
+	// 	glBindTexture(GL_TEXTURE_2D, mesh->texture);
+	// } else {
+	// 	glColor4f(0.9, 0.7, 0.7, 1);
+	// 	glBindTexture(GL_TEXTURE_2D, checker_texture);
+	// }
+	// glVertexPointer(3, GL_FLOAT, 0, mesh->position);
+	// glNormalPointer(GL_FLOAT, 0, mesh->normal);
+	// glTexCoordPointer(2, GL_FLOAT, 0, mesh->texcoord);
+	// glDrawElements(GL_TRIANGLES, mesh->elementcount, GL_UNSIGNED_INT, mesh->element);
 }
 
 void drawnode(aiNode *node, aiMatrix4x4 world)
 {
-	float mat[16];
-	int i;
+	// float mat[16];
+	// int i;
 
-	aiMultiplyMatrix4(&world, &node->mTransformation);
-	transposematrix(mat, &world);
+	// aiMultiplyMatrix4(&world, &node->mTransformation);
+	// transposematrix(mat, &world);
 
-	for (i = 0; i < node->mNumMeshes; i++) {
-		struct mesh *mesh = meshlist + node->mMeshes[i];
-		if (mesh->mesh->mNumBones == 0) {
-			// non-skinned meshes are in node-local space
-			glPushMatrix();
-			glMultMatrixf(mat);
-			drawmesh(mesh);
-			glPopMatrix();
-		} else {
-			// skinned meshes are already in world space
-			drawmesh(mesh);
-		}
-	}
+	// for (i = 0; i < node->mNumMeshes; i++) {
+	// 	struct mesh *mesh = meshlist + node->mMeshes[i];
+	// 	if (mesh->mesh->mNumBones == 0) {
+	// 		// non-skinned meshes are in node-local space
+	// 		glPushMatrix();
+	// 		glMultMatrixf(mat);
+	// 		drawmesh(mesh);
+	// 		glPopMatrix();
+	// 	} else {
+	// 		// skinned meshes are already in world space
+	// 		drawmesh(mesh);
+	// 	}
+	// }
 
-	for (i = 0; i < node->mNumChildren; i++)
-		drawnode(node->mChildren[i], world);
+	// for (i = 0; i < node->mNumChildren; i++)
+	// 	drawnode(node->mChildren[i], world);
 }
 
 void drawscene(struct aiScene *scene)
 {
-	aiMatrix4x4 world;
+	// aiMatrix4x4 world;
 
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glEnableClientState(GL_NORMAL_ARRAY);
+	// glEnableClientState(GL_VERTEX_ARRAY);
+	// glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	// glEnableClientState(GL_NORMAL_ARRAY);
 
-	aiIdentityMatrix4(&world);
-	drawnode(scene->mRootNode, world);
+	// aiIdentityMatrix4(&world);
+	// drawnode(scene->mRootNode, world);
 
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	glDisableClientState(GL_NORMAL_ARRAY);
+	// glDisableClientState(GL_VERTEX_ARRAY);
+	// glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	// glDisableClientState(GL_NORMAL_ARRAY);
 }
 
 void measuremesh(struct mesh *mesh, aiMatrix4x4 transform, float bboxmin[3], float bboxmax[3])

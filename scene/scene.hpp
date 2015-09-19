@@ -8,10 +8,10 @@
 
 #ifdef __APPLE__
 #include <OpenGL/OpenGL.h>
-#include <GLUT/glut.h>
+// #include <GLUT/glut.h>
 #else
 #include <GL/gl.h>
-#include <GL/freeglut.h>
+// #include <GL/freeglut.h>
 #endif
 
 #ifndef GL_GENERATE_MIPMAP
